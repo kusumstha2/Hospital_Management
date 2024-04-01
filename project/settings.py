@@ -41,6 +41,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'hospital_app',
+    'rest_framework',
+    'debug_toolbar',
+    'django_filters',
+    'rest_framework.authtoken',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
+   
+     
+    
+    
+    
+    
 ]
 
 MIDDLEWARE = [
@@ -79,8 +92,15 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hospital_management',
+        'USER': 'root',
+        'password': '',
+        'HOST':'localhost',
+        'PORT':'3306',
+
     }
 }
 
@@ -124,4 +144,34 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# if DEBUG:
+#     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+#     INTERNAL_IPS = [
+#         # ...
+#         '127.0.0.1',
+#         # Add your IP if different
+#     ]
+if DEBUG:
+    import mimetypes
+    mimetypes.add_type("application/javascript", ".js", True)
+    INTERNAL_IPS = [
+        '127.0.0.1',
+    ]
+    MIDDLEWARE += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
+    }
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 4,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    
+    ]
+}
