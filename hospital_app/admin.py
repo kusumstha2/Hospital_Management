@@ -1,10 +1,45 @@
 from django.contrib import admin
 from .models import *
+from django.conf import settings
+from django.contrib.admin.models import LogEntry
+from django.contrib.auth.admin import UserAdmin
 
+
+# LogEntry._meta.get_field('user').related_model = settings.AUTH_USER_MODEL
 # class AppointmentInline(admin.TabularInline):
 #     model = Appointment
 #     extra = 0
+from .models import User
 
+@admin.register(User)
+class UserAdmin(UserAdmin):
+   fieldsets = (
+      (None, {"fields": ("username", "password")}),
+      (("Personal info"), {"fields": ("first_name", "last_name", "email", "role")}),
+      (
+         ("Permissions"),
+         {
+            "fields": (
+               "is_active",
+               "is_staff",
+               "is_superuser",
+               "groups",
+               "user_permissions",
+            ),
+         },
+      ),
+      (("Important dates"), {"fields": ("last_login", "date_joined")}),
+   )
+   list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'role')
+   search_fields = ('username', 'email', 'first_name', 'last_name')
+   ordering = ('username',)
+   
+   def save_model(self, request, obj, form, change):
+      if obj.role is not None:
+         obj.is_staff = True
+      super().save_model(request, obj, form, change)
+   list_filter=('role',)
+   search_fields=('role','username')
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
     list_display = ['name', 'gender', 'date_of_birth', 'contact_phone', 'contact_email']
@@ -24,13 +59,13 @@ class AppointmentAdmin(admin.ModelAdmin):
             kwargs["queryset"] = Staff.objects.filter(role='doctor')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-@admin.register(Staff)
-class DoctorAdmin(admin.ModelAdmin):
-    list_display=('name','role','specialty','contact_info','availability')
-    search_fields=('contact_info','availability')
-    list_filter=('specialty',)
-    list_per_page=10
-    list_editable = ('availability',)
+# @admin.register(Staff)
+# class StaffAdmin(admin.ModelAdmin):
+#     list_display=('user','specialty','contact_info','availability')
+#     search_fields=('contact_info','availability')
+#     list_filter=('specialty',)
+#     list_per_page=10
+#     list_editable = ('availability',)
 
 
 @admin.register(Schedule)

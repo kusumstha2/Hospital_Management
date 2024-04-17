@@ -48,11 +48,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'log',
    
      
-    
-    
-    
+     
     
 ]
 
@@ -71,7 +70,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [''],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -164,14 +163,17 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
     }
-
+AUTH_USER_MODEL='log.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 4,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    
-    ]
+    # 'DEFAULT_AUTHENTICATION_CLASSES': 
+    # 'rest_framework.authentication.TokenAuthentication',
+    'DATETIME_FORMAT': "%Y-%m-%d %I:%M %p",
+    'TIME_FORMAT': "%I:%M %p",
 }
+
+
+

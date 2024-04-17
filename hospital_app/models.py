@@ -2,11 +2,27 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import time,date
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
+from django.db.models import Sum
+from django.contrib.auth.models import AbstractUser
 
 
-# Create your models here.
 
-    
+
+class User(AbstractUser):
+    ROLE=[
+        ('manager','Manager'),
+        ('doctor','Doctor'),
+        ('nurse','Nurse'),
+        ('receptionist','Receptionist'),
+    ]
+
+    role = models.CharField(max_length=15,choices=ROLE,null=True,blank=True)
+
+
+
+
 class Emergency(models.Model):
     # patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='emergencies',default=1)
     patient_name= models.CharField(max_length=25,null=True,blank=True)
@@ -57,18 +73,16 @@ class Staff(models.Model):
         ('busy', 'Busy'),
         ('on_leave', 'On Leave'),
     ]
-    ROLE=[('doctor','Doctor'),
-          ('nurse','Nurse'),
-          ('reception','Receptionist'),
-          ('cleaner','Cleaner')]
-    name = models.CharField(max_length=100)
-    contact_info = models.CharField(max_length=10)
-    role = models.CharField(max_length=20,choices = ROLE, default ='reception')
+   
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    contact_info = models.CharField(max_length=10, validators=[
+      RegexValidator(regex='^[0-9]{10}$', message=('Contact information must be a 10-digit number.'), code='invalid_contact_information')
+   ])
     specialty = models.CharField(max_length=100,null =True,blank = True)
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICE, default='available')
 
     def __str__(self):
-        return f"{self.name}-{self.availability}"     
+        return f"{self.user.username}-{self.availability}"     
     
 class Appointment(models.Model):
     STATUS_CHOICES = [

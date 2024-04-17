@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from .models import *
-class PatientSerializers(serializers.ModelSerializer):
+from rest_framework import serializers
+
+
+class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id',
@@ -31,35 +34,6 @@ class AppointmentSerializer(serializers.ModelSerializer):
             
         )  
         model=Appointment
-       
-# class DoctorSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         fields=(
-#             'name',
-#             'specialty',
-#             'contact_info',
-#             'availability',
-            
-#              )   
-#         model=Doctor 
-
-class StaffSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields=(
-            'name',
-            'contact_info',
-            'availability',
-            ) 
-        model=Staff 
-
-# class PatientAppointmentSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         fields=(
-#             'name', 
-#             'assigned_doctor',
-#         )
-#         model = Patient_Appointment
-
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
@@ -132,29 +106,28 @@ class EmergencySerializer(serializers.ModelSerializer):
             'updated_at',
         )
 
-# class TriageSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Triage
-#         fields = (
-#             'patient',
-#             'emergency', 
-#             'triage_level', 
-#             'triage_time',
-#         )     
+
+
+from rest_framework import serializers
 
 class InvoiceSerializer(serializers.ModelSerializer):
+    total_amount = serializers.SerializerMethodField()
+    total_paid_amount = serializers.SerializerMethodField()
+    balance_due = serializers.SerializerMethodField()
+    is_fully_paid = serializers.SerializerMethodField()
+
     class Meta:
         model = Invoice
-        fields = (
-          'id', 
-          'patient', 
-          'date_created',
-          'due_date', 
-          'total_paid_amount',
-          'balance_due', 
-          'is_fully_paid',
-        )           
-                  
-                       
-              
-        
+        fields = ['id', 'patient', 'date_created', 'due_date', 'is_paid', 'total_amount', 'total_paid_amount', 'balance_due', 'is_fully_paid']
+
+    def get_total_amount(self, obj):
+        return sum(item.total_amount() for item in obj.items.all())
+
+    def get_total_paid_amount(self, obj):
+        return sum(payment.amount for payment in obj.payments.all())
+
+    def get_balance_due(self, obj):
+        return self.get_total_amount(obj) - self.get_total_paid_amount(obj)
+
+    def get_is_fully_paid(self, obj):
+        return self.get_balance_due(obj) == 0
