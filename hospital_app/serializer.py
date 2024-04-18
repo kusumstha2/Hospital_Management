@@ -18,12 +18,18 @@ class PatientSerializer(serializers.ModelSerializer):
             'updated_at',
         )
         model = Patient
-
+class DoctorSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields=(
+            'name',
+        )
+        model=Doctor
 
 class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         fields=(
-            'patient', 
+            'patient',
+            'assigned_doctor', 
             'date',
             'time',
             'purpose',

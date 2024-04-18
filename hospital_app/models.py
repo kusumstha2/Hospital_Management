@@ -22,7 +22,13 @@ class User(AbstractUser):
 
 
 
-
+class Doctor(models.Model):
+    name=models.CharField(max_length=50,default=1)
+    
+    def __str__(self):
+        return self.name
+    
+    
 class Emergency(models.Model):
     # patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='emergencies',default=1)
     patient_name= models.CharField(max_length=25,null=True,blank=True)
@@ -66,24 +72,7 @@ class Patient(models.Model):
         return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
     def __str__(self):
         return self.name
-    
-class Staff(models.Model):
-    AVAILABILITY_CHOICE=[
-        ('available', 'Available'),
-        ('busy', 'Busy'),
-        ('on_leave', 'On Leave'),
-    ]
-   
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
-    contact_info = models.CharField(max_length=10, validators=[
-      RegexValidator(regex='^[0-9]{10}$', message=('Contact information must be a 10-digit number.'), code='invalid_contact_information')
-   ])
-    specialty = models.CharField(max_length=100,null =True,blank = True)
-    availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICE, default='available')
-
-    def __str__(self):
-        return f"{self.user.username}-{self.availability}"     
-    
+     
 class Appointment(models.Model):
     STATUS_CHOICES = [
         ('Scheduled', 'Scheduled'),
@@ -92,7 +81,7 @@ class Appointment(models.Model):
     ]
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
-    assigned_doctor = models.ForeignKey(Staff, on_delete=models.CASCADE,null=True,blank=True, related_name='staff')
+    assigned_doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
     purpose = models.CharField(max_length=255)
@@ -103,34 +92,11 @@ class Appointment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.patient.name}'s appointment on {self.date} at {self.time}"    
+        return f"{self.patient.name}-{self.assigned_doctor.name}-{self.date}-{self.time}"    
 
-
-# class Staff(models.Model):
-#     AVAILABILITY_CHOICE=[
-#         ('available', 'Available'),
-#         ('busy', 'Busy'),
-#         ('on_leave', 'On Leave'),
-#     ]
-#     name = models.CharField(max_length=100)
-#     contact_info = models.CharField(max_length=100)
-#     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICE, default='available')
-    
-#     def __str__(self):
-#         return f"{self.name}-{self.availability}"
-
-    
-
-       
-# class Patient_Appointment(models.Model):
-#     name = models.CharField(max_length=100)
-#     assigned_doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
-
-#     def __str__(self):
-#         return self.name
 
 class Schedule(models.Model):
-    doctor = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)

@@ -14,7 +14,7 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework.exceptions import AuthenticationFailed
 from hospital_app.permission import isNurseorReadOnly, isManagerReadOnly, isReceptionistReadOnly, isDoctororReadOnly
 
-# Use string reference for RegistrationAPIView
+
 class RegistrationAPIView(APIView):
    def post(self, request):
       serializer = UserSerializer(data=request.data)
@@ -23,7 +23,7 @@ class RegistrationAPIView(APIView):
          return Response({'message': 'User registered successfully.'},status=status.HTTP_201_CREATED)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Use string reference for LoginAPIView and LogoutAPIView
+
 class LoginAPIView(APIView):
    def post(self, request):
       username = request.data.get('username')
@@ -56,7 +56,6 @@ class LogoutAPIView(APIView):
       else:
          return Response({'detail': 'Invalid username or password.'}, status=status.HTTP_400_BAD_REQUEST)
 
-# Define other views...
 
 
 class StaffViewSet(viewsets.ModelViewSet):

@@ -1,12 +1,18 @@
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework as filters
-from .models import Emergency, Patient, Schedule, Appointment, MedicalRecord, Invoice, InvoiceItem, Payment, MedicalInventoryRecord
-from .serializer import EmergencySerializer, PatientSerializer, ScheduleSerializer, AppointmentSerializer, MedicalRecordSerializer, InvoiceSerializer, InvoiceItemSerializer, PaymentSerializer, MedicalInventoryRecordSerializer
+from .models import Emergency, Patient, Schedule, Appointment, MedicalRecord, Invoice, InvoiceItem, Payment, MedicalInventoryRecord,Doctor
+from .serializer import EmergencySerializer, PatientSerializer, ScheduleSerializer, AppointmentSerializer, MedicalRecordSerializer, InvoiceSerializer, InvoiceItemSerializer, PaymentSerializer, MedicalInventoryRecordSerializer,DoctorSerializer
 from .permission import isReceptionistReadOnly, isDoctororReadOnly
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
-
+class DoctorViewSet(viewsets.ModelViewSet):
+    queryset = Doctor.objects.all()
+    serializer_class = DoctorSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter,DjangoFilterBackend)
+    filterset_fields = ('name',)
+    search_fields = ('name',)
 class EmergencyViewSet(viewsets.ModelViewSet):
     queryset = Emergency.objects.all()
     serializer_class = EmergencySerializer

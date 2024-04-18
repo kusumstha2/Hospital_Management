@@ -3,12 +3,6 @@ from .models import *
 from django.conf import settings
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.admin import UserAdmin
-
-
-# LogEntry._meta.get_field('user').related_model = settings.AUTH_USER_MODEL
-# class AppointmentInline(admin.TabularInline):
-#     model = Appointment
-#     extra = 0
 from .models import User
 
 @admin.register(User)
@@ -40,6 +34,10 @@ class UserAdmin(UserAdmin):
       super().save_model(request, obj, form, change)
    list_filter=('role',)
    search_fields=('role','username')
+   
+@admin.register(Doctor)
+class DoctorAdmin(admin.ModelAdmin):
+    list_display=['name']
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
     list_display = ['name', 'gender', 'date_of_birth', 'contact_phone', 'contact_email']
@@ -54,18 +52,7 @@ class AppointmentAdmin(admin.ModelAdmin):
     list_filter = ['status']
     search_fields = ['patient__name', 'purpose']
     list_per_page = 10
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "assigned_doctor":
-            kwargs["queryset"] = Staff.objects.filter(role='doctor')
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-# @admin.register(Staff)
-# class StaffAdmin(admin.ModelAdmin):
-#     list_display=('user','specialty','contact_info','availability')
-#     search_fields=('contact_info','availability')
-#     list_filter=('specialty',)
-#     list_per_page=10
-#     list_editable = ('availability',)
 
 
 @admin.register(Schedule)

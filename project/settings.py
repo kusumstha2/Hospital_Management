@@ -169,8 +169,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 4,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    # 'DEFAULT_AUTHENTICATION_CLASSES': 
-    # 'rest_framework.authentication.TokenAuthentication',
     'DATETIME_FORMAT': "%Y-%m-%d %I:%M %p",
     'TIME_FORMAT': "%I:%M %p",
 }
